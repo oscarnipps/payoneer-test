@@ -6,26 +6,49 @@ import androidx.lifecycle.ViewModel;
 
 import com.app.payoneertest.data.Repository;
 import com.app.payoneertest.data.Resource;
-import com.app.payoneertest.data.remote.ApplicableNetwork;
+import com.app.payoneertest.data.remote.InputElement;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SharedViewModel extends ViewModel {
-    private MutableLiveData<Resource<ApplicableNetwork>> data = new MutableLiveData<>();
+    public static final String TAG = SharedViewModel.class.getSimpleName();
+    private MutableLiveData<Resource<String>> result = new MutableLiveData<>();
+    private Repository repo = Repository.getInstance();
+    private Map<String, List<InputElement>> resultMap = new HashMap<>();
+    private List<InputElement> inputElements = new ArrayList<>();
 
     public void getDataFromApi() {
-        data.setValue(Resource.loading());
+        result.setValue(Resource.loading());
 
-        Repository repo = Repository.getInstance();
+        repo.getData( mapItems -> {
 
-        repo.getData(()-> {
-            data.setValue(Resource.success(null));
+            if (mapItems.status == Resource.Status.SUCCESS) {
+
+                result.setValue(Resource.success(null));
+
+                resultMap = mapItems.data;
+
+                return;
+            }
+
+            result.setValue(Resource.error(mapItems.message));
         });
 
     }
 
-    public LiveData<Resource<ApplicableNetwork>> dataResult() {
-        return data;
+    public LiveData<Resource<String>> dataResult() {
+        return result;
     }
 
+
+
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        repo.stop();
+    }
 }

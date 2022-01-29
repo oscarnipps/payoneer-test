@@ -17,17 +17,7 @@ public class NetworkUtils {
     public static URL buildUrl() throws MalformedURLException {
         Uri uri = Uri.parse(Constants.API_URL);
 
-        URL url = null;
-
-        url = new URL(uri.toString());
-
-       /* try {
-            url = new URL(uri.toString());
-
-        } catch (MalformedURLException e) {
-
-            e.printStackTrace();
-        }*/
+        URL url = new URL(uri.toString());
 
         return url;
     }
@@ -39,6 +29,12 @@ public class NetworkUtils {
 
         try {
             urlConnection = (HttpURLConnection) url.openConnection();
+
+            urlConnection.setRequestMethod("GET");
+
+            urlConnection.setReadTimeout(10000);
+
+            urlConnection.setConnectTimeout(15000);
 
             InputStream inputStream = urlConnection.getInputStream();
 
@@ -55,7 +51,10 @@ public class NetworkUtils {
             return null;
 
         } finally {
-            urlConnection.disconnect();
+
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
         }
     }
 }
