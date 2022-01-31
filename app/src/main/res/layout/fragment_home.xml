@@ -7,6 +7,8 @@
 
 
     <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/input_layout"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -17,7 +19,7 @@
         android:orientation="vertical">
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/first_name_container"
+            android:id="@+id/code_input_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -28,7 +30,7 @@
             >
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/first_name"
+                android:id="@+id/code_input"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="code"
@@ -38,7 +40,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/find"
+            android:id="@+id/find_network_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="find"
@@ -47,8 +49,41 @@
             app:layout_constraintStart_toStartOf="parent"
             app:shapeAppearance="?shapeAppearanceSmallComponent" />
 
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/error_layout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_margin="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="No internet connection"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            android:indeterminate="true"/>
 
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:indeterminate="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

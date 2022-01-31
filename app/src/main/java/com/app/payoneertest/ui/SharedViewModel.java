@@ -1,5 +1,7 @@
 package com.app.payoneertest.ui;
 
+import android.text.Editable;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -16,9 +18,10 @@ import java.util.Map;
 public class SharedViewModel extends ViewModel {
     public static final String TAG = SharedViewModel.class.getSimpleName();
     private MutableLiveData<Resource<String>> result = new MutableLiveData<>();
+    private MutableLiveData<Boolean> isCodeAvailable = new MutableLiveData<>();
     private Repository repo = Repository.getInstance();
     private Map<String, List<InputElement>> resultMap = new HashMap<>();
-    private List<InputElement> inputElements = new ArrayList<>();
+    private List<InputElement> codeInputElements = new ArrayList<>();
 
     public void getDataFromApi() {
         result.setValue(Resource.loading());
@@ -43,6 +46,10 @@ public class SharedViewModel extends ViewModel {
         return result;
     }
 
+    public LiveData<Boolean> codeAvailableResult() {
+        return isCodeAvailable;
+    }
+
 
 
 
@@ -50,5 +57,13 @@ public class SharedViewModel extends ViewModel {
     protected void onCleared() {
         super.onCleared();
         repo.stop();
+    }
+
+    public boolean isValidInput(String codeValue) {
+        return false;
+    }
+
+    public void findNetworkWithCode(String codeInput) {
+
     }
 }

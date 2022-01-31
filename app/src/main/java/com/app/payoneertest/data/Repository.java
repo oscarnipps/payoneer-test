@@ -5,7 +5,6 @@ import android.util.Log;
 import com.app.payoneertest.data.remote.ApplicableNetwork;
 import com.app.payoneertest.data.remote.InputElement;
 import com.app.payoneertest.data.remote.ListResult;
-import com.app.payoneertest.utils.GsonUtil;
 import com.app.payoneertest.utils.NetworkUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
