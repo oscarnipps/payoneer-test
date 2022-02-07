@@ -13,6 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Payoneertest">
         <activity
+            android:theme="@style/Theme.MaterialComponents.Light.NoActionBar"
             android:name=".ui.MainActivity"
             android:exported="true">
             <intent-filter>

@@ -2,8 +2,20 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/input_layout_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:indeterminate="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
 
     <LinearLayout
@@ -33,7 +45,8 @@
                 android:id="@+id/code_input"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="code"
+                android:hint="@string/code"
+                android:textAllCaps="true"
                 android:inputType="text"
                 android:textStyle="bold" />
 
@@ -43,47 +56,12 @@
             android:id="@+id/find_network_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="find"
+            android:text="@string/find"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:shapeAppearance="?shapeAppearanceSmallComponent" />
 
     </LinearLayout>
-
-
-    <LinearLayout
-        android:visibility="gone"
-        android:id="@+id/error_layout"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_margin="16dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="No internet connection"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textStyle="bold"
-            android:textAlignment="center"
-            android:indeterminate="true"/>
-
-    </LinearLayout>
-
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:indeterminate="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

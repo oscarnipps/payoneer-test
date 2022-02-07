@@ -12,6 +12,11 @@ public class InputElement {
     @Expose
     private String type;
 
+    public InputElement(String name, String type) {
+        this.name = name;
+        this.type = type;
+    }
+
     public String getName() {
         return name;
     }

@@ -1,6 +1,6 @@
 package com.app.payoneertest.ui;
 
-import android.text.Editable;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -16,54 +16,72 @@ import java.util.List;
 import java.util.Map;
 
 public class SharedViewModel extends ViewModel {
-    public static final String TAG = SharedViewModel.class.getSimpleName();
+    private static final String TAG = SharedViewModel.class.getSimpleName();
     private MutableLiveData<Resource<String>> result = new MutableLiveData<>();
-    private MutableLiveData<Boolean> isCodeAvailable = new MutableLiveData<>();
-    private Repository repo = Repository.getInstance();
-    private Map<String, List<InputElement>> resultMap = new HashMap<>();
+    private final Repository repo = Repository.getInstance();
+    private Map<String, List<InputElement>> resultMap;
     private List<InputElement> codeInputElements = new ArrayList<>();
+    private String currentNetworkCode;
+
 
     public void getDataFromApi() {
-        result.setValue(Resource.loading());
+        if (resultMap == null) {
 
-        repo.getData( mapItems -> {
+            result.setValue(Resource.loading());
 
-            if (mapItems.status == Resource.Status.SUCCESS) {
+            repo.getData(mapItems -> {
 
-                result.setValue(Resource.success(null));
+                if (mapItems.status == Resource.Status.SUCCESS) {
 
-                resultMap = mapItems.data;
+                    resultMap = mapItems.data;
 
-                return;
-            }
+                    result.postValue(Resource.success(null));
 
-            result.setValue(Resource.error(mapItems.message));
-        });
+                    return;
+                }
 
+                result.postValue(Resource.error(mapItems.message));
+            });
+        }
     }
 
     public LiveData<Resource<String>> dataResult() {
         return result;
     }
 
-    public LiveData<Boolean> codeAvailableResult() {
-        return isCodeAvailable;
+    public boolean isValidInput(String codeValue) {
+        return codeValue != null && !codeValue.isEmpty();
     }
 
+    public boolean isCodeAvailable(String code) {
+        String key = code.toUpperCase();
+        return resultMap.containsKey(key);
+    }
 
+    public List<InputElement> getInputElements() {
+        return codeInputElements;
+    }
 
+    public void setInputElementsForNetworkCode(String codeInput) {
+        String key = codeInput.toUpperCase();
+
+        currentNetworkCode = key;
+
+        codeInputElements = resultMap.get(key);
+    }
+
+    public String getCurrentNetworkCode() {
+        return currentNetworkCode;
+    }
 
     @Override
     protected void onCleared() {
         super.onCleared();
-        repo.stop();
+        repo.stopService();
     }
 
-    public boolean isValidInput(String codeValue) {
-        return false;
-    }
-
-    public void findNetworkWithCode(String codeInput) {
-
+    public void retryDataCall() {
+        resultMap = null;
+        getDataFromApi();
     }
 }

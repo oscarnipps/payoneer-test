@@ -13,24 +13,25 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.app.payoneertest.R;
 import com.app.payoneertest.data.Resource;
-import com.app.payoneertest.utils.NetworkConnectionMonitor;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 
-public class HomeFragment  extends Fragment {
+public class HomeFragment extends Fragment {
 
     private static final String TAG = HomeFragment.class.getSimpleName();
-    private SharedViewModel mViewModel;
-    private NetworkConnectionMonitor networkConnectionMonitor;
+    private SharedViewModel viewModel;
     private ProgressBar progressBar;
     private LinearLayout inputLayout;
-    private LinearLayout errorLayout;
+    private ConstraintLayout inputLayoutContainer;
     private MaterialButton findButton;
     private TextInputEditText inputEditText;
     private String codeInput;
@@ -38,11 +39,9 @@ public class HomeFragment  extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_home,container,false);
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        mViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
-
-        networkConnectionMonitor = new NetworkConnectionMonitor(requireContext());
+        viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
 
         return view;
     }
@@ -53,40 +52,56 @@ public class HomeFragment  extends Fragment {
 
         initViews(view);
 
-        mViewModel.dataResult().observe(getViewLifecycleOwner(), dataResultObserver());
+        initViewListeners();
 
+        viewModel.dataResult().observe(getViewLifecycleOwner(), dataResultObserver());
+    }
 
-
-        networkConnectionMonitor.observe(getViewLifecycleOwner(), networkConnectionObserver());
-
-
+    private void initViewListeners() {
         inputEditText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
 
             @Override
             public void afterTextChanged(Editable editable) {
-                Log.d(TAG , "code input : " + editable.toString());
                 codeInput = editable.toString();
             }
         });
 
         findButton.setOnClickListener(v -> {
-
-            if (mViewModel.isValidInput(codeInput)) {
-
-                mViewModel.findNetworkWithCode(codeInput);
-
+            if (viewModel.isValidInput(codeInput)) {
+                findNetworkWithCode();
                 return;
             }
 
-            Toast.makeText(requireActivity(), "invalid input", Toast.LENGTH_SHORT).show();
+            Toast.makeText(v.getContext(), getString(R.string.invalid_code_input), Toast.LENGTH_SHORT).show();
         });
+    }
+
+    private void findNetworkWithCode() {
+        if (viewModel.isCodeAvailable(codeInput)) {
+
+            viewModel.setInputElementsForNetworkCode(codeInput);
+
+            navigateToSecondFragment();
+
+            return;
+        }
+
+        Toast.makeText(requireContext(), getString(R.string.code_not_available), Toast.LENGTH_SHORT).show();
+    }
+
+    private void navigateToSecondFragment() {
+        FragmentTransaction fragmentTransaction = getParentFragmentManager().beginTransaction();
+
+        fragmentTransaction.replace(R.id.container, DetailsFragment.class, null);
+
+        fragmentTransaction.addToBackStack(null);
+
+        fragmentTransaction.commit();
     }
 
     private void initViews(View view) {
@@ -94,13 +109,12 @@ public class HomeFragment  extends Fragment {
 
         inputLayout = view.findViewById(R.id.input_layout);
 
-        errorLayout = view.findViewById(R.id.error_layout);
+        inputLayoutContainer = view.findViewById(R.id.input_layout_container);
 
         findButton = view.findViewById(R.id.find_network_btn);
 
-        inputEditText = (TextInputEditText) view.findViewById(R.id.code_input);
+        inputEditText = view.findViewById(R.id.code_input);
     }
-
 
 
     @NonNull
@@ -110,17 +124,13 @@ public class HomeFragment  extends Fragment {
             switch (result.status) {
 
                 case LOADING:
-                    errorLayout.setVisibility(View.GONE);
+                    progressBar.setVisibility(View.VISIBLE);
 
                     inputLayout.setVisibility(View.GONE);
-
-                    progressBar.setVisibility(View.VISIBLE);
 
                     break;
 
                 case SUCCESS:
-                    errorLayout.setVisibility(View.GONE);
-
                     inputLayout.setVisibility(View.VISIBLE);
 
                     progressBar.setVisibility(View.GONE);
@@ -128,34 +138,25 @@ public class HomeFragment  extends Fragment {
                     break;
 
                 case ERROR:
-                    errorLayout.setVisibility(View.VISIBLE);
+                    showSnackBar(result.message);
 
                     progressBar.setVisibility(View.GONE);
-
-                    inputLayout.setVisibility(View.GONE);
 
                     break;
             }
         };
     }
 
-    @NonNull
-    private Observer<Boolean> networkConnectionObserver() {
-        return isConnected -> {
-            Log.d(TAG, "is network connected : " + isConnected);
-
-            if (isConnected) {
-                mViewModel.getDataFromApi();
-                return;
-            }
-
-            Toast.makeText(requireActivity(), "no network connection", Toast.LENGTH_SHORT).show();
-        };
-    }
-
     @Override
     public void onResume() {
         super.onResume();
+        viewModel.getDataFromApi();
+    }
+
+    private void showSnackBar(String message) {
+        Snackbar.make(inputLayoutContainer, message, Snackbar.LENGTH_LONG)
+                .setAction("Retry", v -> viewModel.retryDataCall())
+                .show();
     }
 
 

@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Payoneertest</string>
+    <string name="empty_elements">No input element available for \'%s\'</string>
+    <string name="invalid_code_input">invalid input</string>
+    <string name="code_not_available">code not available</string>
+    <string name="no_internet_connection_text">No Internet Connection</string>
+    <string name="network_error">Failed to connect to the network</string>
+    <string name="find">find</string>
+    <string name="code">code</string>
 </resources>
